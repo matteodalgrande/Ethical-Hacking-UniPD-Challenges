@@ -1,0 +1,9 @@
+gcc main.c -o HelloWorld
+
+# compile program from multiple files.
+gcc -o outputfile file1.c file2.c file3.c
+
+# to compile multiple programs at one with multiple source code files.
+gcc -c file1.c file2.c file3.c
+
+./HelloWorld
