@@ -1,0 +1,9 @@
+sudo insmod hello.ko # inserting a module
+
+lsmod | grep hello # list modules
+
+sudo rmmod hello # remove the module
+
+dmesg # check the messages
+
+dmesg -k -w

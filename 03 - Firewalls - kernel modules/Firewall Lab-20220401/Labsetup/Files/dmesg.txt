@@ -1,0 +1,3 @@
+dmesk -k -w
+       -k, --kernel	Print kernel messages.
+       -w, --follow	Wait for new messages.  This feature is supported only on systems with a readable /dev/kmsg (since kernel 3.5.0)
