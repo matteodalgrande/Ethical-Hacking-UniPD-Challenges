@@ -1,0 +1,6 @@
+compile:
+    $ nasm -f elf64 mysh_64.s -o mysh_64.o
+    $ ld --omagic mysh_64.o -o mysh_64
+    
+    $ nasm -f elf64 3_1_new.s -o 3_1_new.o && ld --omagic 3_1_new.o -o 3_1_new && 3_1_new
+

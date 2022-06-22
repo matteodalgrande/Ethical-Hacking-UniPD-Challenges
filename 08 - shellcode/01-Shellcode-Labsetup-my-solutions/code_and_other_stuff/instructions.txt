@@ -1,0 +1,54 @@
+we are going to exploit execve() function
+    execve replaces the current process with a new process, running the command you specified as its first argument.
+    
+-----------------------------------------
+
+$ nasm -f elf32 mysh.s -o mysh.o
+
+    -f elf32 → compile the code to 32-bit ELF binary format
+        The Executable and Linkable Format (ELF) is a common standard file format for executable file, object code, and shared libraries. 
+        For 64-bit assembly code,elf64 should be used
+
+
+$ ld -m elf_i386 mysh.o -o mysh
+    -m elf_i386 → generating the 32-bit ELF binary.
+        After this step we get the file executable code mysh. If we run it, we can get a shell. Before and after running mysh, we print out the current shell’s process IDs using echo $$, so we can clearly see that mysh indeed starts a new shell.
+$ ld --omagic -m elf_i386 mysh.o -o mysh
+    -N D Set the text and data sections to be readable and writable. 
+                Also, do not page-align the data segment, and disable linking against shared libraries. 
+                If the output format supports Unix style magic numbers, mark the output as "OMAGIC". 
+                Note: Although a writable text section is allowed for PE-COFF targets, 
+                it does not conform to the format specification published by Microsoft. 
+             By default, the code segment is not writable. 
+             When this program runs, it needs to modify the data stored in the code region; 
+             if the code segment is not writable, the program will crash. 
+             This is not a problem for actual attacks, because in attacks, the code is typically injected into a writable data segment (e.g. stack or heap). 
+             Usually we do not run shellcode as a standalone program
+
+GETTING THE MACHINE CODE:
+    Only the machine code is the shellcode, so we have to extract the assembly, disassembling the executable file or object file.
+    There are two syntax modes for assembly code:
+        - AT&T syntax mode
+        - Intel syntax mode
+In the following we use the -Mintel option to produce the assembly code in the Intel mode.
+
+$ objdump -Mintel --disassemble mysh.o
+
+$ xxd -p -c 20 mysh.o
+    -p | -ps | -postscript | -plain 
+        → Output in postscript continuous hexdump style. Also known as plain hexdump style.
+    -c cols | -cols cols
+        → Format <cols> octets per line. Default 16 (-i:  12, -ps: 30, -b: 6). Max 256.
+
+The highlighted numbers printed out are machine code. It is possible to use the xxd command to print out the content of the binary file. 
+
+
+compile and running:
+    nasm -f elf32 mysh.s -o mysh.o && ld -m elf_i386 mysh.o -o mysh && mysh
+omagic: 
+    nasm -f elf32 other_mysh.s -o other_mysh.o && ld --omagic -m elf_i386 other_mysh.o -o other_mysh && other_mysh
+
+debugging:
+    strace -f -e execve -s 10000 mysh
+
+    objdump -d other_mysh   

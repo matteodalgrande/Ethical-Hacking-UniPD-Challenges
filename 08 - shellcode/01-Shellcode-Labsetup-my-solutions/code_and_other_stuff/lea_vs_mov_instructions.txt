@@ -1,0 +1,8 @@
+The LLLEA is intruction is a nmemonic for "Load Effective Address" and it's syntax follows:
+
+lea <destination> <src>
+
+The difference is that the mov instruction moves the CONTENTS of the source into the destination.
+
+The lea instruction moves the ADDRESS of the source into the destination..
+
